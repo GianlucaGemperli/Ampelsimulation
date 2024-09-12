@@ -13,27 +13,28 @@ pygame.display.set_caption('Ampelsimulation')
 
 Strasse = pygame.image.load("Strasse.png")
 
-# Ampelposition und Farben
-ampel_pos = (200, 300)
-colors = {
-    "green": pygame.color.Color('green'),
-    "yellow": pygame.color.Color('yellow'),
-    "red": pygame.color.Color('red')
-}
+# Auto-Klasse
+class Car:
+    def __init__(self, x, y, width=50, height=30, color=(0, 0, 255), speed=5):
+        """Initialisiert das Auto mit Position, Größe, Farbe und Geschwindigkeit."""
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.speed = speed
 
-# Ampelzustand und Timer
-ampel_state = "green"
-last_switch_time = time.time()
+    def move(self):
+        """Bewegt das Auto nach rechts. Wenn es den Bildschirm verlässt, startet es neu."""
+        self.x += self.speed
+        if self.x > c.SCREEN_WIDTH:
+            self.x = -self.width  # Auto erscheint auf der linken Seite wieder
 
-# Funktion zum Zeichnen der Ampel
-def draw_traffic_light(screen, color, position):
-    pygame.draw.rect(screen, pygame.color.Color('black'), (*position, 14, 50))  # Hintergrund für Ampel
-    if color == "red":
-        pygame.draw.circle(screen, colors['red'], (position[0] + 7, position[1] + 15), 5)
-    elif color == "yellow":
-        pygame.draw.circle(screen, colors['yellow'], (position[0] + 7, position[1] + 30), 5)
-    elif color == "green":
-        pygame.draw.circle(screen, colors['green'], (position[0] + 7, position[1] + 45), 5)
+    def draw(self, screen):
+        """Zeichnet das Auto auf dem Bildschirm."""
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
+
+
 
 # Hauptschleife
 running = True
@@ -46,24 +47,6 @@ while running:
     # Hintergrundbild zeichnen
     screen.fill(Backcolour)
     screen.blit(Strasse, (0, 0))
-
-    # Zeitberechnung
-    current_time = time.time()
-    elapsed_time = current_time - last_switch_time
-
-    # Ampelzustand aktualisieren
-    if ampel_state == "green" and elapsed_time >= 40:
-        ampel_state = "yellow"
-        last_switch_time = current_time
-    elif ampel_state == "yellow" and elapsed_time >= 2:
-        ampel_state = "red"
-        last_switch_time = current_time
-    elif ampel_state == "red" and elapsed_time >= 12:
-        ampel_state = "green"
-        last_switch_time = current_time
-
-    # Ampel zeichnen
-    draw_traffic_light(screen, ampel_state, ampel_pos)
 
     # Bildschirm aktualisieren
     pygame.display.update()
